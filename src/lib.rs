@@ -1,14 +1,16 @@
-extern crate clockwork;
+#![feature(custom_derive, plugin)]
+#![plugin(serde_macros)]
+
 extern crate handlebars;
-extern crate rustc_serialize;
+extern crate serde;
 extern crate webutil;
+extern crate clockwork;
 
 use std::path::Path;
-use std::collections::BTreeMap;
 use clockwork::Module;
 use handlebars::Handlebars;
-use rustc_serialize::json::{Json, ToJson};
 use webutil::HtmlString;
+use serde::ser::Serialize;
 
 pub struct ViewRenderer {
     registry: Handlebars,
@@ -43,7 +45,7 @@ impl ViewRenderer {
         }
     }
 
-    pub fn render<M: ToJson>(&self, view: &str, model: &M) -> HtmlString {
+    pub fn render<M: Serialize>(&self, view: &str, model: &M) -> HtmlString {
         // Render the specific view
         let content = self.registry.render(view, model).unwrap();
 
@@ -59,14 +61,7 @@ impl ViewRenderer {
 impl Module for ViewRenderer {
 }
 
+#[derive(Serialize)]
 struct TemplateModel {
     content: String
-}
-
-impl ToJson for TemplateModel {
-    fn to_json(&self) -> Json {
-        let mut m: BTreeMap<String, Json> = BTreeMap::new();
-        m.insert("content".into(), self.content.to_json());
-        m.to_json()
-    }
 }

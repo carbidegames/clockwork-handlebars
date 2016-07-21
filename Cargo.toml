@@ -4,7 +4,8 @@ version = "0.1.0"
 authors = ["Layl <LaylConway@users.noreply.github.com>"]
 
 [dependencies]
-clockwork = {path = "../clockwork"}
+handlebars = {version = "0.18.2", features = ["serde_type"]}
+serde = "^0.7.0"
+serde_macros = "^0.7.0"
 webutil = {path = "../webutil"}
-handlebars = "0.18.2"
-rustc-serialize = "0.3.19"
+clockwork = {path = "../clockwork"}
