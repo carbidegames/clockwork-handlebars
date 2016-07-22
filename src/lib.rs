@@ -3,13 +3,13 @@
 
 extern crate handlebars;
 extern crate serde;
-extern crate webutil;
+extern crate webapp;
 extern crate clockwork;
 
 use std::path::Path;
 use clockwork::Module;
 use handlebars::Handlebars;
-use webutil::HtmlString;
+use webapp::HtmlString;
 use serde::ser::Serialize;
 
 pub struct ViewRenderer {

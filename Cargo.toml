@@ -7,5 +7,5 @@ authors = ["Layl <LaylConway@users.noreply.github.com>"]
 handlebars = {version = "0.18.2", features = ["serde_type"]}
 serde = "^0.7.0"
 serde_macros = "^0.7.0"
-webutil = {path = "../webutil"}
+webapp = {path = "../webapp"}
 clockwork = {path = "../clockwork"}
