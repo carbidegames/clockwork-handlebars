@@ -2,9 +2,10 @@
 name = "clockwork-handlebars"
 version = "0.1.0"
 authors = ["Layl <LaylConway@users.noreply.github.com>"]
+license = "MIT OR Apache-2.0"
 
 [dependencies]
-handlebars = {version = "0.18.2", features = ["serde_type"]}
+handlebars = {version = "0.19.1", features = ["serde_type"]}
 serde = "^0.7.0"
 serde_macros = "^0.7.0"
 webapp = {path = "../webapp"}

@@ -21,27 +21,39 @@ impl ViewRenderer {
     pub fn new<D: AsRef<Path>, S: ToString>(directory: D, layout: S) -> Self {
         let mut registry = Handlebars::new();
 
-        // Scan the views directory for files
+        // Start at the root directory with no base
+        Self::read_dir_with_base(directory, &mut registry, &"");
+
+        ViewRenderer {
+            registry: registry,
+            layout: layout.to_string(),
+        }
+    }
+
+    fn read_dir_with_base<D: AsRef<Path>>(directory: D, registry: &mut Handlebars, base: &str) {
+        // Scan the directory for contents
         for entry in ::std::fs::read_dir(directory).unwrap() {
             let entry = entry.unwrap();
             let path = entry.path();
             let metadata = entry.metadata().unwrap();
 
-            // Skip non-files
-            if !metadata.is_file() {
-                continue;
+            // Check if we're looking at a file or a folder
+            if metadata.is_file() {
+                // If it's a file, add it to the registry
+
+                // Create the full name for the template
+                let template_name = path.file_stem().unwrap().to_str().unwrap();
+                let template_name = format!("{}{}", base, template_name);
+
+                // Add the template
+                registry.register_template_file(&template_name, &path)
+                    .map_err(|e| format!("Failed to parse {:?}: {:?}", path, e))
+                    .unwrap();
+            } else if metadata.is_dir() {
+                // If it's a directory, recurse
+                let dir_name = path.file_name().unwrap().to_str().unwrap().to_string();
+                Self::read_dir_with_base(path, registry, &format!("{}{}/", base, dir_name));
             }
-
-            // Add the template
-            let template_name = path.file_stem().unwrap();
-            registry.register_template_file(template_name.to_str().unwrap(), &path)
-                .map_err(|e| format!("Failed to parse {:?}: {:?}", path, e))
-                .unwrap();
-        }
-
-        ViewRenderer {
-            registry: registry,
-            layout: layout.to_string(),
         }
     }
 
