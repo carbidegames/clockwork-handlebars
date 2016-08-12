@@ -8,7 +8,7 @@ extern crate clockwork;
 
 use std::path::Path;
 use clockwork::Module;
-use handlebars::Handlebars;
+use handlebars::{Handlebars, Helper, RenderContext, Context};
 use webapp::HtmlString;
 use serde::ser::Serialize;
 
@@ -18,8 +18,21 @@ pub struct ViewRenderer {
 }
 
 impl ViewRenderer {
-    pub fn new<D: AsRef<Path>, S: ToString>(directory: D, layout: S) -> Self {
+    pub fn new<D: AsRef<Path>, S: ToString>(directory: D, layout: S, prefix: String) -> Self {
         let mut registry = Handlebars::new();
+
+        // Initialize the default helpers
+        registry.register_helper("res", Box::new(
+            move |_: &Context, h: &Helper, _: &Handlebars, rc: &mut RenderContext| {
+                // We need to prepend the resource path with the prefix
+                let param = h.param(0).unwrap().value();
+                let url = format!("{}{}", prefix, param);
+
+                try!(rc.writer.write(url.into_bytes().as_ref()));
+
+                Ok(())
+            }
+        ));
 
         // Start at the root directory with no base
         Self::read_dir_with_base(directory, &mut registry, &"");
