@@ -8,7 +8,7 @@ extern crate clockwork;
 
 use std::path::Path;
 use clockwork::Module;
-use handlebars::{Handlebars, Helper, RenderContext, Context};
+use handlebars::{Handlebars, Helper, RenderContext, Context, JsonRender};
 use webapp::HtmlString;
 use serde::ser::Serialize;
 
@@ -25,7 +25,7 @@ impl ViewRenderer {
         registry.register_helper("res", Box::new(
             move |_: &Context, h: &Helper, _: &Handlebars, rc: &mut RenderContext| {
                 // We need to prepend the resource path with the prefix
-                let param = h.param(0).unwrap().value();
+                let param = h.param(0).unwrap().value().render();
                 let url = format!("{}{}", prefix, param);
 
                 try!(rc.writer.write(url.into_bytes().as_ref()));
